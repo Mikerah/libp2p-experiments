@@ -18,7 +18,7 @@ func main() {
 
 	sourcePort := 8081
 	fmt.Println("starting server on ", sourcePort)
-	rand := mrand.New(mrand.NewSource(int64(sourcePort)))
+	rand := mrand.New(mrand.NewSource(int64(sourcePort))) // not to be used in prod
 	prvKey, _, err := crypto.GenerateKeyPairWithReader(crypto.RSA, 2048, rand)
 	if err != nil {
 		panic(err)
