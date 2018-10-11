@@ -6,6 +6,7 @@ import (
 
 	"github.com/libp2p/go-libp2p"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -32,14 +33,28 @@ func main() {
 	}
 
 	msg := []byte("hello world")
-	err = pubsub.Publish("foobar", msg)
 
+	ticker := time.NewTicker(2 * time.Second)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <- ticker.C:
+				err = pubsub.Publish("foobar", msg)
+			case <- quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
 
-	newmsg, err := ch.Next(ctx)
-	if(err != nil ) {
-		panic(err)
+	for {
+		newmsg, err := ch.Next(ctx)
+		if(err != nil ) {
+			panic(err)
+		}
+		fmt.Println("message is ", newmsg)
 	}
-	fmt.Println("message is ", newmsg)
 
 	fmt.Println("done")
 }
